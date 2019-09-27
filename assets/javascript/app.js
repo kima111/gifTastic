@@ -4,7 +4,7 @@
 
 var queryURL = "https://api.giphy.com/v1/gifs/search?";
 var apiKey = "api_key=taCRnzujm9m5i5KyZNgh5SQFno2PwGd8";
-var query = "&q=basketball";
+var query = "&q=";
 var limit = "&limit=25";
 var offset = "&offset=0";
 var rating = "&rating=G";
@@ -13,13 +13,21 @@ var lang = "&lang=en";
 var requestObj = queryURL + apiKey + query + limit + offset + rating + lang; 
 var gifs = ["The Matrix", "The Notebook", "Mr. Nobody", "The Lion King"];
 
+function displayGifInfo(){
+    var gif = $(this).attr("data-name");
+    var requestObj = queryURL + apiKey + query + gif + limit + offset + rating + lang; 
     $.ajax({
-      url: requestObj,
-      method: "GET"
-    }).then(function(response) {
-     console.log(response);
-    });
-    
+        url: requestObj,
+        method: "GET"
+      }).then(function(response) {
+       var $gif = $("<div>");
+       $gif.attr("class", "gif-view");
+       $gif.append($("<img src = '" + response.data[0].images.fixed_width.url + "'>"));
+   
+       $("#gif-container").prepend($gif);
+      });
+}
+
     function renderButtons() {
         $("#buttons-view").empty();
         for (i = 0; i < gifs.length; i++) {
@@ -36,5 +44,5 @@ var gifs = ["The Matrix", "The Notebook", "Mr. Nobody", "The Lion King"];
         gifs.push(gif);
         renderButtons();
       });
-
+    $(document).on("click", ".gif", displayGifInfo);
     renderButtons();
