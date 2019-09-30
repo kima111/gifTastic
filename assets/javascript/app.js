@@ -1,7 +1,3 @@
-
-//https://api.giphy.com/v1/gifs/search?api_key=taCRnzujm9m5i5KyZNgh5SQFno2PwGd8&q=basketball&limit=25&offset=0&rating=G&lang=en
-
-
 var queryURL = "https://api.giphy.com/v1/gifs/search?";
 var apiKey = "api_key=taCRnzujm9m5i5KyZNgh5SQFno2PwGd8";
 var query = "&q=";
@@ -11,7 +7,7 @@ var rating = "&rating=G";
 var lang = "&lang=en";
 
 var requestObj = queryURL + apiKey + query + limit + offset + rating + lang; 
-var gifs = ["The Matrix", "The Notebook", "Mr. Nobody", "The Lion King"];
+var gifs = ["pikachu", "Michael Jordan", "Puppy", "Tree"];
 
 function displayGifInfo(){
     var gif = $(this).attr("data-name");
@@ -20,16 +16,17 @@ function displayGifInfo(){
         url: requestObj,
         method: "GET"
       }).then(function(response) {
+        var $gifDiv = $("<div>");
+        var gifImage = $("<img>");
+        
+        gifImage.attr("src", response.data[0].images.fixed_width.url) ;
+        gifImage.attr("class", "gifImage");
+        gifImage.attr("data-still", response.data[0].images.fixed_width_still.url);
+        gifImage.attr("data-animate", response.data[0].images.fixed_width.url);
+        gifImage.attr("data-state", "animate");
 
-        var $gif = $("<img>");
-        $gif.attr("src", response.data[0].images.fixed_width.url) ;
-        $gif.attr("class", "gifImage");
-        $("#gif-container").prepend($gif);
-        //Used within AJAX because of anyschrnous event outside will not work if called upon prior to creation.
-        $(".gifImage").on("click", function(event){
-            event.preventDefault();
-            console.log("clicked");
-        })
+        $gifDiv.append(gifImage);
+        $("#gif-container").prepend($gifDiv);
       });
 }
 
@@ -52,4 +49,18 @@ $("#add-gif").on("click", function(event) {
     });
 
 $(document).on("click", ".gif", displayGifInfo);
+
+//because this is assigned after element image exsists, therefore binding click event to document
+$(document).on("click", ".gifImage", function(){
+    var state = $(this).attr("data-state");
+if(state === "still"){
+    $(this).attr("src", $(this).attr("data-animate"));
+    $(this).attr("data-state", "animate");
+}
+else if (state ==="animate"){
+    $(this).attr("src", $(this).attr("data-still"));
+    $(this).attr("data-state", "still");
+}
+})
+
 renderButtons();
