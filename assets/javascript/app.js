@@ -20,29 +20,36 @@ function displayGifInfo(){
         url: requestObj,
         method: "GET"
       }).then(function(response) {
-       var $gif = $("<div>");
-       $gif.attr("class", "gif-view");
-       $gif.append($("<img src = '" + response.data[0].images.fixed_width.url + "'>"));
-   
-       $("#gif-container").prepend($gif);
+
+        var $gif = $("<img>");
+        $gif.attr("src", response.data[0].images.fixed_width.url) ;
+        $gif.attr("class", "gifImage");
+        $("#gif-container").prepend($gif);
+        //Used within AJAX because of anyschrnous event outside will not work if called upon prior to creation.
+        $(".gifImage").on("click", function(event){
+            event.preventDefault();
+            console.log("clicked");
+        })
       });
 }
 
-    function renderButtons() {
-        $("#buttons-view").empty();
-        for (i = 0; i < gifs.length; i++) {
-            var a = $("<button>");
-            a.addClass("gif");
-            a.attr("data-name", gifs[i]);
-            a.text(gifs[i]);
-            $("#buttons-view").append(a);
-        }
+function renderButtons() {
+    $("#buttons-view").empty();
+    for (i = 0; i < gifs.length; i++) {
+        var a = $("<button>");
+        a.addClass("gif");
+        a.attr("data-name", gifs[i]);
+        a.text(gifs[i]);
+        $("#buttons-view").append(a);
     }
-    $("#add-gif").on("click", function(event) {
-        event.preventDefault();
-        var gif = $("#gif-input").val().trim();
-        gifs.push(gif);
-        renderButtons();
-      });
-    $(document).on("click", ".gif", displayGifInfo);
+}
+
+$("#add-gif").on("click", function(event) {
+    event.preventDefault();
+    var gif = $("#gif-input").val().trim();
+    gifs.push(gif);
     renderButtons();
+    });
+
+$(document).on("click", ".gif", displayGifInfo);
+renderButtons();
