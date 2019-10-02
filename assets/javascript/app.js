@@ -5,6 +5,7 @@ var limit = "&limit=25";
 var offset = "&offset=0";
 var rating = "&rating=G";
 var lang = "&lang=en";
+var imageCount = 25;
 
 var requestObj = queryURL + apiKey + query + limit + offset + rating + lang; 
 var gifs = ["pikachu", "Michael Jordan", "Puppy", "Tree"];
@@ -16,17 +17,41 @@ function displayGifInfo(){
         url: requestObj,
         method: "GET"
       }).then(function(response) {
-        var $gifDiv = $("<div>");
-        var gifImage = $("<img>");
+        console.log(response);
+        for(i=0;i<imageCount;i++){
+            var gridCol = $("<div>")
+            gridCol.attr("class", "col-3");
         
-        gifImage.attr("src", response.data[0].images.fixed_width.url) ;
-        gifImage.attr("class", "gifImage");
-        gifImage.attr("data-still", response.data[0].images.fixed_width_still.url);
-        gifImage.attr("data-animate", response.data[0].images.fixed_width.url);
-        gifImage.attr("data-state", "animate");
+            var cardDiv = $("<div>");
+            cardDiv.attr("class", "card");
 
-        $gifDiv.append(gifImage);
-        $("#gif-container").prepend($gifDiv);
+            var cardBodyDiv = $("<div>");
+            cardBodyDiv.attr("class", "card-body");
+            
+            var gifImage = $("<img>");
+            gifImage.attr("src", response.data[i].images.fixed_width.url) ;
+            gifImage.attr("class", "gifImage card-img-top");
+            gifImage.attr("data-still", response.data[i].images.fixed_width_still.url);
+            gifImage.attr("data-animate", response.data[i].images.fixed_width.url);
+            gifImage.attr("data-state", "animate");
+            
+            var cardTitle = $("<h5>");
+            cardTitle.attr("class", "card-title");
+            cardTitle.text(response.data[i].title);
+
+            var cardText = $("<p>");
+            cardText.attr("class", "card-text");
+            cardText.text("rated: " + response.data[i].rating);
+
+            cardBodyDiv.append(gifImage);
+            cardBodyDiv.append(cardTitle);
+            cardBodyDiv.append(cardText);
+            cardDiv.append(cardBodyDiv);
+            gridCol.append(cardDiv);
+
+            $("#gif-container").prepend(gridCol);
+        }
+       
       });
 }
 
@@ -34,6 +59,7 @@ function renderButtons() {
     $("#buttons-view").empty();
     for (i = 0; i < gifs.length; i++) {
         var a = $("<button>");
+        a.attr("class", "btn btn-light");
         a.addClass("gif");
         a.attr("data-name", gifs[i]);
         a.text(gifs[i]);
